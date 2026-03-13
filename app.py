@@ -22,7 +22,7 @@ from mcp.client.stdio import stdio_client
 # ───────────────────────────────────────────
 # GEMINI SETUP
 # ───────────────────────────────────────────
-GEMINI_API_KEY = "AIzaSyC67Tsx_uZIZKKcionlS9FtQNuAbXaXMVE"
+GEMINI_API_KEY = "AIzaSyDTqbMEnSd0EMLI3Oh0GN-JGTqhIK51ikw"
 genai.configure(api_key=GEMINI_API_KEY)
 gemini_model = genai.GenerativeModel("gemini-2.0-flash")
 

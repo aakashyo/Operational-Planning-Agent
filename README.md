@@ -1,77 +1,80 @@
-# Operational Planning Agent 🚨
+# Operational Planning Agent
 
-Operational Planning Agent is a HIGH-TECH, Gemini-powered disaster response and emergency command system. It leverages advanced AI to generate comprehensive operational plans, integrate live weather data via MCP, and provide semantic search over NDMA protocols using RAG.
+Operational Planning Agent is a sophisticated disaster response and emergency command system. It utilizes Google Gemini AI to generate comprehensive operational plans, integrates real-time weather data through the Model Context Protocol (MCP), and provides semantic search over official NDMA protocols using Retrieval-Augmented Generation (RAG).
 
-## 🌟 Key Features
+## Key Features
 
-- **Gemini 2.0 Flash Integration**: Generates detailed 12-section operational blueprints tailored to specific disasters and locations.
-- **RAG (Retrieval-Augmented Generation)**: Semantic search over official NDMA guidelines and protocols for localized, expert advice.
-- **MCP (Model Context Protocol)**: Real-time weather intelligence integration via a specialized FastMCP server.
-- **Dynamic Risk Analysis**: Analyzes environmental conditions, hospital capacities, and shelter availability in real-time.
-- **Interactive Dashboard**: A premium, responsive UI built with React, Vite, and Tailwind CSS, featuring live maps and agent reasoning visualization.
+| Feature | Description |
+| :--- | :--- |
+| **Gemini 2.0 Integration** | Generates detailed 12-section operational plans tailored to specific disaster types and locations. |
+| **RAG System** | Performs semantic search over official NDMA guidelines to provide localized and expert recommendations. |
+| **MCP Integration** | Incorporates real-time weather intelligence via a dedicated FastMCP server. |
+| **Risk Analysis** | Evaluates environmental conditions, hospital availability, and shelter capacity in real-time. |
+| **Interactive Dashboard** | A responsive interface for disaster monitoring, resource tracking, and plan visualization. |
 
-## 🛠️ Technology Stack
+## Technical Specification
 
-### Backend
-- **Framework**: FastAPI (Python)
-- **AI Models**: Google Gemini 2.0 Flash
-- **Vector Database**: ChromaDB (for RAG)
-- **Embeddings**: HuggingFace (all-MiniLM-L6-v2)
-- **MCP**: FastMCP for live tool integration
+| Component | Technology |
+| :--- | :--- |
+| **Backend Framework** | FastAPI (Python) |
+| **AI Architecture** | Google Gemini 2.0 Flash |
+| **Vector Database** | ChromaDB |
+| **Embeddings** | HuggingFace (all-MiniLM-L6-v2) |
+| **Frontend Framework** | React + Vite |
+| **Styling** | Tailwind CSS + Framer Motion |
+| **Geospatial** | Leaflet |
 
-### Frontend
-- **Framework**: React + Vite
-- **Styling**: Tailwind CSS + Framer Motion (Animations)
-- **Maps**: Leaflet (via React-Leaflet)
-- **Icons**: Lucide-React
+## Project Structure
 
-## 🚀 Getting Started
+| Path | Description |
+| :--- | :--- |
+| `app.py` | Main FastAPI application and Planning Agent logic. |
+| `ingest.py` | Pipeline for processing and indexing protocol documents for RAG. |
+| `weather_mcp.py` | FastMCP server implementation for weather tools. |
+| `frontend/` | React-based user interface source code. |
+| `data/` | Vector database storage and source documents. |
+| `rag/` | Core implementation of the RAG engine. |
+| `tools/` | Custom MCP tool definitions and server configurations. |
+
+## Installation and Setup
 
 ### Prerequisites
-- Python 3.9+
-- Node.js 18+
-- Gemini API Key
+- Python 3.9 or higher
+- Node.js 18 or higher
+- Valid Google Gemini API Key
 
-### Backend Setup
-1. Navigate to the root directory.
-2. Create and activate a virtual environment:
+### Backend Configuration
+1. Initialize a virtual environment:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate  # Windows: venv\Scripts\activate
    ```
-3. Install dependencies:
+2. Install required dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. Run the data ingestion script (optional, if you have new PDFs):
+3. (Optional) Index documents:
    ```bash
    python ingest.py
    ```
-5. Start the API server:
+4. Start the server:
    ```bash
    python app.py
    ```
 
-### Frontend Setup
-1. Navigate to the `frontend` directory.
-2. Install dependencies:
+### Frontend Configuration
+1. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
+2. Install packages:
    ```bash
    npm install
    ```
-3. Start the development server:
+3. Launch the development server:
    ```bash
    npm run dev
    ```
 
-## 📂 Project Structure
-
-- `app.py`: Main FastAPI entry point and Planning Agent logic.
-- `ingest.py`: RAG pipeline for processing and indexing PDF documents.
-- `weather_mcp.py`: FastMCP server for live weather tools.
-- `frontend/`: React source code, components, and assets.
-- `data/`: Local storage for the vector database and source protocols.
-- `rag/`: Core RAG engine implementation.
-- `tools/`: MCP server and custom tool definitions.
-
 ---
-Built with ❤️ for emergency responders and disaster management teams.
+Developed for emergency command centers and disaster management professionals.

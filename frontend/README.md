@@ -1,29 +1,35 @@
-# Operational Planning Agent - Frontend 🌐
+# Operational Planning Agent - Frontend
 
-A premium, interactive dashboard for disaster response management, built with React, Vite, and Tailwind CSS.
+The frontend of the Operational Planning Agent is a professional-grade dashboard designed for real-time disaster response coordination and resource management.
 
-## ✨ Features
+## Core Functionality
 
-- **Live Scenario Input**: Real-time plan generation with streaming-like visual feedback.
-- **Interactive Disaster Map**: Visualizes the impact radius and nearby resources (Hospitals, Shelters) using Leaflet.
-- **Agent Reasoning Panel**: Watch the AI "think" through geolocation, retrieval, and analysis steps.
-- **Comprehensive Reports**: 12-section operational plans with actionable insights for civilians and rescue operators.
-- **Resource Management**: Real-time tracking of ambulances, rescue teams, and medical staff availability.
+| Feature | Description |
+| :--- | :--- |
+| **Scenario Simulation** | Interface for inputting disaster scenarios and receiving structured AI plans. |
+| **Geospatial Visualization** | Interactive maps documenting impact zones and critical infrastructure. |
+| **Agent Reasoning** | Transparent view into the agent's step-by-step decision-making process. |
+| **Resource Tracking** | Real-time monitoring of available medical and rescue assets. |
+| **Report Export** | Capability to generate and export comprehensive operational plans. |
 
-## 🛠️ Tech Stack
+## Technology Details
 
-- **React 18**: Component-based UI library.
-- **Vite**: Ultra-fast build tool and dev server.
-- **Tailwind CSS**: Modern utility-first styling.
-- **Framer Motion**: Smooth micro-animations and transitions.
-- **React-Leaflet**: Geospatial visualization.
-- **Lucide-React**: Sleek, modern icons.
+| Dependency | Purpose |
+| :--- | :--- |
+| **React 18** | UI component architecture. |
+| **Vite** | Modern build and development environment. |
+| **Tailwind CSS** | Professional utility-first styling system. |
+| **Framer Motion** | High-performance interface animations. |
+| **Leaflet** | Map rendering and spatial data visualization. |
+| **Lucide-React** | Consistent, professional iconography. |
 
-## 🚀 Scripts
+## Development Workflows
 
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the production-ready application.
-- `npm run preview`: Previews the production build locally.
+| Command | Action |
+| :--- | :--- |
+| `npm run dev` | Initialize local development environment. |
+| `npm run build` | Compile optimized production assets. |
+| `npm run preview` | Serve the production build for local verification. |
 
----
-Ensure the backend server is running at `http://localhost:8000` for the dashboard to function correctly.
+## Configuration
+The frontend communicates with the backend API at `http://localhost:8000`. Ensure the backend service is active before initiating frontend operations.
