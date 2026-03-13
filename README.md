@@ -53,6 +53,12 @@ Operational Planning Agent is a sophisticated disaster response and emergency co
    ```bash
    pip install -r requirements.txt
    ```
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`.
+   - Open `.env` and enter your **Gemini API Key**.
+   ```bash
+   cp .env.example .env
+   ```
 3. (Optional) Index documents:
    ```bash
    python ingest.py

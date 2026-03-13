@@ -22,7 +22,15 @@ from mcp.client.stdio import stdio_client
 # ───────────────────────────────────────────
 # GEMINI SETUP
 # ───────────────────────────────────────────
-GEMINI_API_KEY = ""
+from dotenv import load_dotenv
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    print("[ERROR] GEMINI_API_KEY not found in environment variables or .env file.")
+    # In a production environment, you might want to raise an error here
+    # sys.exit(1)
+
 genai.configure(api_key=GEMINI_API_KEY)
 gemini_model = genai.GenerativeModel("gemini-2.0-flash")
 
