@@ -1,0 +1,12 @@
+Flood Response Protocol:
+1. Immediate Activation: Deploy rescue boats and high-water vehicles.
+2. Evacuation: Move residents to pre-designated shelters in schools and community centers.
+3. Medical: Establish mobile triages at safe zones.
+4. Logistics: Ensure supply of clean water and dry rations for 48 hours.
+5. Communications: Maintain satellite radio contact if cellular networks fail.
+
+Fire Response Protocol:
+1. Containment: Deploy fire tenders to incident perimeter.
+2. Evacuation: Clear 500m radius of all personnel.
+3. Medical: Alert nearest burn center.
+4. Alerts: Issue smoke inhalation hazard notice.
