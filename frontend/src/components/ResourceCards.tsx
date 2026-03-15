@@ -13,10 +13,10 @@ interface ResourceCardsProps {
 }
 
 const iconMap = [
-  { key: 'ambulances',       label: 'Ambulances',       icon: <Activity size={20} />, color: 'text-blue-400 bg-blue-400/10' },
-  { key: 'rescue_teams',     label: 'Rescue Teams',     icon: <Truck size={20} />,    color: 'text-orange-400 bg-orange-400/10' },
-  { key: 'medical_staff',    label: 'Medical Staff',    icon: <Users size={20} />,    color: 'text-green-400 bg-green-400/10' },
-  { key: 'shelter_capacity', label: 'Shelter Capacity', icon: <Home size={20} />,     color: 'text-purple-400 bg-purple-400/10' },
+  { key: 'ambulances',       label: 'Ambulances',       icon: <Activity size={20} />, color: 'text-primary bg-primary/10' },
+  { key: 'rescue_teams',     label: 'Rescue Teams',     icon: <Truck size={20} />,    color: 'text-accent bg-accent/10' },
+  { key: 'medical_staff',    label: 'Medical Staff',    icon: <Users size={20} />,    color: 'text-highlight bg-highlight/10' },
+  { key: 'shelter_capacity', label: 'Shelter Capacity', icon: <Home size={20} />,     color: 'text-secondary/40 bg-secondary/10' },
 ] as const;
 
 const ResourceCards: React.FC<ResourceCardsProps> = ({ data }) => {

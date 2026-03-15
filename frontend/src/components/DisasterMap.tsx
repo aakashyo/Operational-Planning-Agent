@@ -1,5 +1,5 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -19,9 +19,19 @@ L.Marker.prototype.options.icon = DefaultIcon;
 interface DisasterMapProps {
   location?: [number, number];
   points?: Array<{ lat: number; lng: number; label: string; type: 'danger' | 'resource' }>;
+  radiusKm?: number;
 }
 
-const DisasterMap: React.FC<DisasterMapProps> = ({ location = [13.0827, 80.2707], points = [] }) => {
+// Helper to change map view dynamically on props update
+const ChangeView = ({ center, zoom }: { center: [number, number], zoom: number }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(center, zoom, { duration: 1.5 });
+  }, [center, zoom, map]);
+  return null;
+};
+
+const DisasterMap: React.FC<DisasterMapProps> = ({ location = [13.0827, 80.2707], points = [], radiusKm = 5 }) => {
   return (
     <div className="glass-panel h-[400px] relative z-0 group">
       {/* Decorative Grid Overlay */}
@@ -29,25 +39,25 @@ const DisasterMap: React.FC<DisasterMapProps> = ({ location = [13.0827, 80.2707]
       
       {/* Target Crosshairs Center */}
       <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center opacity-30">
-        <div className="w-px h-full bg-cyan-500/30"></div>
-        <div className="h-px w-full bg-cyan-500/30 absolute"></div>
-        <div className="w-12 h-12 border border-cyan-500/50 rounded-full absolute"></div>
-        <div className="w-24 h-24 border border-cyan-500/30 rounded-full absolute"></div>
+        <div className="w-px h-full bg-primary/30"></div>
+        <div className="h-px w-full bg-primary/30 absolute"></div>
+        <div className="w-12 h-12 border border-primary/50 rounded-full absolute"></div>
+        <div className="w-24 h-24 border border-primary/30 rounded-full absolute"></div>
       </div>
 
       {/* Radar Sweep Effect */}
       <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center overflow-hidden">
-        <div className="w-[800px] h-[800px] rounded-full border border-cyan-500/10 bg-[conic-gradient(from_0deg,transparent_70%,rgba(6,182,212,0.1)_100%)] animate-radar"></div>
+        <div className="w-[800px] h-[800px] rounded-full border border-primary/10 bg-[conic-gradient(from_0deg,transparent_70%,rgba(124,58,237,0.12)_100%)] animate-radar"></div>
       </div>
 
-      <div className="absolute top-4 left-4 z-30 bg-[#0B0F19]/90 backdrop-blur-md border border-cyan-900/50 p-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center space-x-3 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,1)]" />
-        <span className="text-cyan-100">Live Tactical Satellite</span>
+      <div className="absolute top-4 left-4 z-30 bg-panel/80 backdrop-blur-md border border-white/10 p-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center space-x-3 shadow-[0_0_15px_rgba(124,58,237,0.25)]">
+        <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-[0_0_8px_rgba(251,146,60,0.8)]" />
+        <span className="text-slate-100">Live Tactical Satellite</span>
       </div>
       
       <div className="absolute bottom-4 right-4 z-30 flex space-x-2">
-        <span className="bg-cyan-950/80 border border-cyan-900/50 px-2 py-1 text-[9px] font-mono text-cyan-400 rounded backdrop-blur-sm">LAT: {location[0].toFixed(4)}</span>
-        <span className="bg-cyan-950/80 border border-cyan-900/50 px-2 py-1 text-[9px] font-mono text-cyan-400 rounded backdrop-blur-sm">LNG: {location[1].toFixed(4)}</span>
+        <span className="bg-panel/70 border border-white/10 px-2 py-1 text-[9px] font-mono text-slate-200 rounded backdrop-blur-sm">LAT: {location[0].toFixed(4)}</span>
+        <span className="bg-panel/70 border border-white/10 px-2 py-1 text-[9px] font-mono text-slate-200 rounded backdrop-blur-sm">LNG: {location[1].toFixed(4)}</span>
       </div>
 
       <MapContainer 
@@ -60,10 +70,11 @@ const DisasterMap: React.FC<DisasterMapProps> = ({ location = [13.0827, 80.2707]
           url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
           attribution='&copy; OpenStreetMap & CARTO'
         />
+        <ChangeView center={location} zoom={12} />
         <Circle 
           center={location} 
           pathOptions={{ fillColor: '#06b6d4', color: '#06b6d4', weight: 1, fillOpacity: 0.15, dashArray: '4, 4' }} 
-          radius={3000} 
+          radius={radiusKm * 1000} 
         />
         {points.map((pt, idx) => (
           <Marker key={idx} position={[pt.lat, pt.lng]}>
