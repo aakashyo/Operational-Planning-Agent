@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,77 +9,170 @@
   }
 
   body {
-    @apply bg-background text-slate-100 font-sans antialiased;
+    @apply bg-slate-50 text-slate-900 font-sans antialiased;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: transparent; }
+  /* Light scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #F1F5F9; }
   ::-webkit-scrollbar-thumb {
-    background: rgba(124, 58, 237, 0.35);
+    background: #CBD5E1;
     border-radius: 10px;
-    border: 2px solid rgba(15, 18, 35, 0.6);
   }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(124, 58, 237, 0.55); }
+  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 }
 
 @layer components {
+  /* Primary card — replaces glass-panel */
+  .card {
+    @apply bg-white border border-slate-200 rounded-xl shadow-sm;
+  }
+ 
+  .card-md {
+    @apply bg-white border border-slate-200 rounded-2xl shadow-md;
+  }
+ 
+  .card-lg {
+    @apply bg-white border border-slate-200 rounded-2xl shadow-lg;
+  }
+ 
+  /* Keep glass-panel as alias so any remaining usages don't break */
   .glass-panel {
-    @apply bg-panel/85 backdrop-blur-xl border border-white/10 rounded-2xl relative overflow-hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.55), inset 0 0 35px rgba(124, 58, 237, 0.12);
+    @apply bg-white border border-slate-200 rounded-xl shadow-sm;
   }
 
-  .mission-control-header {
-    @apply bg-panel/95 backdrop-blur-lg border-b border-white/10 py-3.5 px-8 flex justify-between items-center sticky top-0 z-50;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  .app-header {
+    @apply bg-white border-b border-slate-200 py-3.5 px-6 flex justify-between items-center sticky top-0 z-50;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
 
   .sidebar-item {
-    @apply flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 cursor-pointer;
+    @apply flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-500 transition-all hover:bg-gray-50 hover:text-slate-900;
   }
 
   .sidebar-item:hover {
-    @apply bg-white/5 text-primary;
+    @apply bg-gray-50 text-slate-900;
   }
 
   .sidebar-item.active {
-    @apply bg-primary/15 text-primary border-l-4 border-primary;
+    @apply bg-blue-50 text-blue-600 font-semibold;
+  }
+
+  /* Status badges */
+  .badge {
+    @apply px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border flex items-center space-x-1.5;
+  }
+  .badge-blue   { @apply bg-blue-50   text-blue-700   border border-blue-100; }
+  .badge-green  { @apply bg-green-50  text-green-700  border border-green-100; }
+  .badge-yellow { @apply bg-yellow-50 text-yellow-700 border border-yellow-100; }
+  .badge-red    { @apply bg-red-50    text-red-700    border border-red-100; }
+
+  /* Section header */
+  .section-title {
+    @apply text-sm font-semibold text-slate-900 uppercase tracking-wider;
+  }
+
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
 }
 
-/* Smooth tab animation */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-200 rounded-full hover:bg-gray-300 transition-colors;
+}
+
+/* Timeline animations */
+.timeline-item {
+  @apply relative pl-8 pb-8 last:pb-0;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  @apply bg-gray-100;
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+/* ── Animations ─────────────────────────────── */
 .animate-in {
-  animation: fadeSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Pulse glow for high-risk indicators */
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 10px rgba(248, 113, 113, 0.4), inset 0 0 10px rgba(248, 113, 113, 0.2); }
-  50% { box-shadow: 0 0 30px rgba(248, 113, 113, 0.8), inset 0 0 20px rgba(248, 113, 113, 0.4); }
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-.risk-high-glow {
-  animation: pulseGlow 2s infinite;
+.slide-in-left {
+  animation: slideInLeft 0.3s ease-out both;
 }
 
-/* Radar Sweep Animation for the Map */
+/* Subtle pulse for active step indicator */
+@keyframes softPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.15); }
+}
+
+.pulse-dot {
+  animation: softPulse 2s ease-in-out infinite;
+}
+
+/* Severity glow — light version */
+@keyframes severityPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.12); }
+  50%       { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
+.severity-critical {
+  animation: severityPulse 2.5s ease-in-out infinite;
+}
+
+/* Radar (kept for map) */
 @keyframes radar-sweep {
-  0% { transform: rotate(0deg); }
+  0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
 .animate-radar {
   animation: radar-sweep 4s linear infinite;
   transform-origin: center;
+}
+
+/* Tab underline slide animation */
+.tab-underline {
+  position: relative;
+}
+.tab-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+.tab-underline.active::after {
+  transform: scaleX(1);
 }

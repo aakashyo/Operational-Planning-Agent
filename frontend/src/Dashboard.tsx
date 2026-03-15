@@ -5,6 +5,7 @@ import ScenarioInput from './components/ScenarioInput';
 import ResponsePanel from './components/ResponsePanel';
 import DisasterMap from './components/DisasterMap';
 import AgentReasoning from './components/AgentReasoning';
+import ResourceCards from './components/ResourceCards';
 import { generatePlan } from './services/api';
 
 const DEFAULT_RESOURCES = {
@@ -23,21 +24,20 @@ const Dashboard: React.FC = () => {
   const [mapCenter, setMapCenter] = useState<[number, number]>([13.0827, 80.2707]);
   const [mapRadius, setMapRadius] = useState<number>(5);
 
-  // Animation variants
   const containerVars: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.15 }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
   const itemVars: Variants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     show: { 
       opacity: 1, 
       y: 0, 
-      transition: { type: "spring", stiffness: 300, damping: 24 } 
+      transition: { duration: 0.4, ease: "easeOut" } 
     }
   };
 
@@ -60,63 +60,72 @@ const Dashboard: React.FC = () => {
       }
     } catch (err) {
       console.error("Failed to generate plan:", err);
-      setError((err as any)?.message || "Failed to connect to backend. Check that the API server is running.");
+      setError((err as any)?.message || "Internal Command Error. Ensure backend operations are active.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Map state is driven by the latest confirmed location (either from geocoding or live coordinates)
-  const radiusKm = mapRadius;
-
   const mapPoints: any[] = [];
   if (plan?.nearbyHospitals) {
     plan.nearbyHospitals.forEach((h: any) => {
-      if (h.lat && h.lng) mapPoints.push({ lat: h.lat, lng: h.lng, label: `🏥 ${h.name}` });
+      if (h.lat && h.lng) mapPoints.push({ lat: h.lat, lng: h.lng, label: `Medical: ${h.name}` });
     });
   }
   if (plan?.nearestShelters) {
     plan.nearestShelters.forEach((s: any) => {
-      if (s.lat && s.lng) mapPoints.push({ lat: s.lat, lng: s.lng, label: `⛺ ${s.name}` });
+      if (s.lat && s.lng) mapPoints.push({ lat: s.lat, lng: s.lng, label: `Shelter: ${s.name}` });
     });
   }
 
   return (
     <Layout>
       <motion.div 
-        className="space-y-6"
+        className="space-y-8 pb-12"
         variants={containerVars}
         initial="hidden"
         animate="show"
       >
+        <motion.div variants={itemVars}>
+          <ResourceCards data={DEFAULT_RESOURCES} />
+        </motion.div>
+
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-200 px-4 py-3 rounded-md mb-4">
-            <strong className="font-semibold">Error:</strong> {error}
-          </div>
+          <motion.div 
+            variants={itemVars}
+            className="bg-red-50 border border-red-200 text-slate-900 px-6 py-4 rounded-xl flex items-center shadow-sm"
+          >
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-4 shrink-0">
+               <span className="font-bold">!</span>
+            </div>
+            <div>
+              <strong className="font-bold block text-sm">Deployment Failure</strong>
+              <p className="text-xs opacity-80">{error}</p>
+            </div>
+          </motion.div>
         )}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Column — Input + Reasoning */}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column — Strategic Input & Analysis */}
           <motion.div
             variants={itemVars}
-            className="lg:col-span-4 space-y-6 flex flex-col snap-start"
-            viewport={{ once: true, amount: 0.2 }}
+            className="lg:col-span-4 space-y-8 h-full"
           >
             <ScenarioInput onGenerate={handleGenerate} isLoading={isLoading} onLocationChange={(loc) => {
               setMapCenter([loc.lat, loc.lng]);
               setMapRadius(5);
             }} />
-            <div className="flex-1 min-h-[400px]">
+            <div className="min-h-[450px]">
                <AgentReasoning steps={reasoning} isLoading={isLoading} />
             </div>
           </motion.div>
 
-          {/* Right Column — Map + Plan */}
+          {/* Right Column — Command Map & Directives */}
           <motion.div
             variants={itemVars}
-            className="lg:col-span-8 space-y-6 snap-start"
-            viewport={{ once: true, amount: 0.2 }}
+            className="lg:col-span-8 space-y-8"
           >
-            <DisasterMap location={mapCenter} radiusKm={radiusKm} points={mapPoints} />
+            <DisasterMap location={mapCenter} radiusKm={mapRadius} points={mapPoints} />
             <ResponsePanel plan={plan} isLoading={isLoading} />
           </motion.div>
         </div>

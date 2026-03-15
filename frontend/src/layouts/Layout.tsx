@@ -6,130 +6,126 @@ import {
   Activity, 
   FileText, 
   Settings as SettingsIcon,
-  Shield,
   Menu,
   Radio,
-  Crosshair
+  ShieldAlert,
+  Bell
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-interface SidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-}
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { id: 'planner', label: 'Scenario Planner', icon: <AlertTriangle size={20} /> },
-    { id: 'monitor', label: 'Resource Monitor', icon: <Activity size={20} /> },
-    { id: 'map', label: 'Disaster Map', icon: <MapIcon size={20} /> },
-    { id: 'logs', label: 'System Logs', icon: <FileText size={20} /> },
-    { id: 'settings', label: 'Settings', icon: <SettingsIcon size={20} /> },
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, color: 'primary' },
+    { id: 'planner', label: 'Scenario Planner', icon: <AlertTriangle size={18} />, color: 'purple-600' },
+    { id: 'monitor', label: 'Resource Monitor', icon: <Activity size={18} />, color: 'green-600' },
+    { id: 'map', label: 'Disaster Map', icon: <MapIcon size={18} />, color: 'orange-500' },
+    { id: 'logs', label: 'System Logs', icon: <FileText size={18} />, color: 'slate-500' },
+    { id: 'settings', label: 'Settings', icon: <SettingsIcon size={18} />, color: 'indigo-600' },
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col text-slate-100 selection:bg-primary/30">
-      {/* Decorative Top Bar */}
-      <div className="h-1 w-full bg-gradient-to-r from-primary via-highlight to-accent"></div>
-      
+    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900 selection:bg-primary/20">
       {/* Header */}
-      <header className="bg-panel/95 backdrop-blur-xl border-b border-white/10 py-3.5 px-6 flex justify-between items-center z-50 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+      <header className="app-header">
         <div className="flex items-center space-x-4">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-white/10 text-highlight rounded-md lg:hidden transition-colors"
+            className="p-2 hover:bg-gray-100 text-muted rounded-md lg:hidden transition-colors"
           >
-            <Menu size={24} />
+            <Menu size={20} />
           </button>
+          
           <div className="flex items-center space-x-3 group cursor-default">
-            <div className="relative">
-              <Crosshair className="text-highlight group-hover:rotate-90 transition-transform duration-700" size={28} />
-              <div className="absolute inset-0 bg-highlight blur-md opacity-15 group-hover:opacity-40 transition-opacity"></div>
+            <div className="w-9 h-9 bg-primary flex items-center justify-center rounded-lg shadow-sm">
+              <ShieldAlert className="text-white" size={20} />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg font-black tracking-[0.2em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent leading-tight">
-                Nexus
+              <h1 className="text-sm font-bold uppercase tracking-tight text-slate-900 leading-none">
+                Operational Planning Agent
               </h1>
-              <span className="text-[9px] text-slate-400 font-mono tracking-widest uppercase">Global Disaster Intelligence</span>
+              <span className="text-[10px] text-muted font-medium mt-1 uppercase tracking-wide">Emergency Command Center</span>
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-6">
-          <div className="hidden md:flex items-center space-x-2 bg-white/5 px-3 py-1.5 rounded-sm border border-white/10">
-            <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(124,58,237,0.7)]" />
-            <span className="text-[10px] font-mono font-bold text-slate-200 tracking-widest uppercase">Uplink Stable</span>
+
+        <div className="flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4 border-r border-slate-200 pr-4">
+            <div className="badge badge-green">
+              <div className="w-1.5 h-1.5 bg-success rounded-full mr-2" />
+              SYSTEM OPERATIONAL
+            </div>
           </div>
-          <div className="flex items-center space-x-3 pl-4 border-l border-white/10">
-            <Radio size={16} className="text-primary animate-pulse" />
-            <div className="w-8 h-8 bg-gradient-to-br from-primary/70 to-accent/60 rounded-sm flex items-center justify-center border border-white/10 shadow-inner">
-              <span className="text-[10px] font-black tracking-wider text-white">CMD</span>
+          
+          <div className="flex items-center space-x-2">
+            <button className="p-2 hover:bg-gray-100 text-muted rounded-full transition-colors relative">
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-danger rounded-full border-2 border-surface" />
+            </button>
+            <div className="w-8 h-8 rounded-full bg-gray-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+              <div className="text-[10px] font-bold text-muted">ADM</div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className={`
           ${isSidebarOpen ? 'w-64' : 'w-20'} 
-          bg-panel/80 backdrop-blur-md border-r border-white/10 transition-all duration-300 flex flex-col
+          bg-white border-r border-slate-200 transition-all duration-300 flex flex-col
           hidden lg:flex z-40
         `}>
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-3 space-y-1">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (
-                <motion.div
+                <div
                   key={item.id}
-                  whileHover={{ x: 4, backgroundColor: 'rgba(124,58,237,0.08)' }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={() => setActiveTab(item.id)}
-                  className={`
-                    flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors relative
-                    ${isActive ? 'text-primary bg-primary/15' : 'text-slate-300 hover:text-white'}
-                  `}
+                  className={`sidebar-item ${isActive ? 'active' : ''}`}
                 >
+                  <div className={`transition-colors ${isActive ? 'text-primary' : 'text-muted'}`}>
+                    {item.icon}
+                  </div>
+                  {isSidebarOpen && (
+                    <span className="truncate">{item.label}</span>
+                  )}
                   {isActive && (
                     <motion.div 
                       layoutId="activeTabIndicator"
-                      className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_rgba(124,58,237,0.6)] rounded-r-full"
+                      className="absolute right-0 w-1 h-5 bg-primary rounded-l-full"
                     />
                   )}
-                  <div className={isActive ? 'opacity-100' : 'opacity-70'}>{item.icon}</div>
-                  {isSidebarOpen && (
-                    <span className={`font-mono text-xs uppercase tracking-widest ${isActive ? 'font-bold' : 'font-medium'}`}>
-                      {item.label}
-                    </span>
-                  )}
-                </motion.div>
+                </div>
               );
             })}
           </nav>
           
-          <div className="p-4 border-t border-white/10">
-            <div className="bg-panel/70 border border-white/10 p-3 rounded-md backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[9px] uppercase tracking-widest text-slate-400 font-black">Active Scenarios</p>
-                <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+          <div className="p-4 border-t border-slate-200">
+            {isSidebarOpen ? (
+              <div className="bg-gray-50 border border-slate-200 p-3 rounded-lg">
+                <p className="text-[10px] font-bold text-muted uppercase tracking-wider mb-2">Active Incidents</p>
+                <div className="flex items-end justify-between">
+                  <span className="text-2xl font-bold text-slate-900">03</span>
+                  <div className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-bold text-primary">Live</div>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xl font-mono text-slate-100 font-light">03</span>
-                <span className="text-[10px] text-primary bg-primary/10 border border-primary/20 px-2 py-1 rounded cursor-pointer hover:bg-primary/15 transition-colors uppercase tracking-widest font-bold">Monitor</span>
+            ) : (
+              <div className="flex justify-center">
+                <div className="w-2 h-2 rounded-full bg-primary" />
               </div>
-            </div>
+            )}
           </div>
         </aside>
 
-        {/* Main Content Background Grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.025)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none z-0"></div>
-
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 relative z-10 custom-scrollbar snap-y snap-mandatory">
-          {children}
+        <main className="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50 relative custom-scrollbar">
+          <div className="max-w-7xl mx-auto h-full">
+            {children}
+          </div>
         </main>
       </div>
     </div>

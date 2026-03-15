@@ -738,7 +738,7 @@ class PlanningAgent:
         groq_disaster_context = self.tools.get_groq_disaster_context(detected_type, location, query)
         if groq_disaster_context:
             steps.append({
-                "type": "tool", "label": "Groq Disaster Intelligence",
+                "type": "tool", "label": "Threat Intelligence Analysis",
                 "details": f"Generated {detected_type.upper()}-specific intelligence block ({len(groq_disaster_context)} chars) covering hazard profile, civilian priorities, tactical checklist, triage protocol, and monitoring metrics.",
                 "timestamp": ts()
             })
@@ -746,7 +746,7 @@ class PlanningAgent:
         # Step 3c: Optional Groq supplemental insights
         groq_insights = self.tools.get_groq_insights(query)
         if groq_insights:
-            steps.append({"type": "tool", "label": "Groq Supplemental Insights", "details": groq_insights[:300] + ("..." if len(groq_insights) > 300 else ""), "timestamp": ts()})
+            steps.append({"type": "tool", "label": "Supplemental Strategic Insights", "details": groq_insights[:300] + ("..." if len(groq_insights) > 300 else ""), "timestamp": ts()})
 
         # Step 3c: Estimate affected population ratio (use Groq if available, else heuristic)
         affected = self.tools.estimate_affected_population(query, location, detected_type)

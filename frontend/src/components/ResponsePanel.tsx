@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import html2pdf from 'html2pdf.js';
 import {
   AlertCircle, CheckCircle2, ShieldAlert, Clock, Users,
   CloudRain, Building2, Phone, Shield, AlertTriangle, Newspaper, Home, Backpack, Download,
-  Activity, Info, Map as MapIcon, ListChecks, HeartPulse, Truck, Zap, Target
+  Activity, Info, Map as MapIcon, ListChecks, HeartPulse, Truck, Zap, Target,
+  Crosshair, BarChart3, Radio
 } from 'lucide-react';
 
 interface ResponsePanelProps {
@@ -12,25 +13,35 @@ interface ResponsePanelProps {
   isLoading: boolean;
 }
 
-// Render a list of items as descriptive prose cards
-const ProseList: React.FC<{ items: string[]; accentColor: string }> = ({ items, accentColor }) => (
-  <div className="space-y-2">
+// Render a list of items as descriptive cards
+const ProseList: React.FC<{ items: string[]; accentColor: string; icon: React.ReactNode }> = ({ items, accentColor, icon }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
     {items?.map((item: string, i: number) => (
-      <div key={i} className={`flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10`}>
-        <span className={`text-xs font-black mt-0.5 shrink-0 ${accentColor} bg-white/10 rounded-full w-5 h-5 flex items-center justify-center`}>{i + 1}</span>
-        <p className="text-sm text-slate-200 leading-relaxed">{item}</p>
-      </div>
+      <motion.div 
+        key={i}
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ delay: i * 0.05 }}
+        className="flex flex-col p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all group"
+      >
+        <div className="flex items-center space-x-2 mb-2">
+          <div className={`p-1.5 rounded-md ${accentColor} bg-opacity-10`}>
+            {icon}
+          </div>
+          <span className="text-[10px] font-bold text-muted uppercase tracking-wider">Step 0{i+1}</span>
+        </div>
+        <p className="text-xs text-slate-900 leading-relaxed font-medium">{item}</p>
+      </motion.div>
     ))}
   </div>
 );
 
-// Render a list of items as checklist cards
 const CheckList: React.FC<{ items: string[]; iconColor: string }> = ({ items, iconColor }) => (
   <div className="space-y-2">
     {items?.map((item: string, i: number) => (
-      <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+      <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50/50 border border-gray-100">
         <CheckCircle2 size={14} className={`${iconColor} shrink-0 mt-0.5`} />
-        <p className="text-sm text-slate-200 leading-relaxed">{item}</p>
+        <p className="text-xs text-muted leading-relaxed font-medium">{item}</p>
       </div>
     ))}
   </div>
@@ -49,7 +60,7 @@ const ResponsePanel: React.FC<ResponsePanelProps> = ({ plan, isLoading }) => {
       margin:       10,
       filename:     `Situation_Report_${type}_${new Date().toISOString().split('T')[0]}.pdf`,
       image:        { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0B0F19' },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#F8FAFC' },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
     };
     html2pdf().set(opt).from(reportRef.current).save().then(() => { setIsExporting(false); });
@@ -57,26 +68,34 @@ const ResponsePanel: React.FC<ResponsePanelProps> = ({ plan, isLoading }) => {
 
   if (isLoading) {
     return (
-      <div className="glass-panel p-8 flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+      <div className="card p-12 flex flex-col items-center justify-center space-y-6 min-h-[400px]">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-          <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-b-accent/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 border-4 border-gray-100 border-t-primary rounded-full" 
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Radio size={20} className="text-primary animate-pulse" />
+          </div>
         </div>
-        <p className="text-slate-300 animate-pulse font-medium">Synthesizing 12-Point Command Intel...</p>
-        <p className="text-slate-400 text-xs">Groq Intelligence • RAG Guidelines • MCP Weather • Overpass Geolocation</p>
+        <div className="text-center">
+          <p className="text-slate-900 font-bold uppercase tracking-[0.2em] text-xs">Synthesizing Strategic Response</p>
+          <p className="text-muted text-[10px] mt-2 uppercase tracking-widest font-medium">Coordinating Intelligence Assets • Localizing Protocols</p>
+        </div>
       </div>
     );
   }
 
   if (!plan || !plan.incidentSummary) {
     return (
-      <div className="glass-panel p-8 flex flex-col items-center justify-center text-center min-h-[400px]">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-4">
-          <AlertCircle size={36} className="text-slate-400" />
+      <div className="card p-12 flex flex-col items-center justify-center text-center min-h-[400px]">
+        <div className="w-20 h-20 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-6">
+          <ShieldAlert size={36} className="text-gray-300" />
         </div>
-        <h3 className="text-lg font-bold text-slate-200 mb-2">Command Center Interlink Offline</h3>
-        <p className="text-slate-400 max-w-sm text-sm leading-relaxed">
-          Provide a scenario to generate a comprehensive 12-section disaster operational plan powered by Groq + Gemini AI.
+        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest mb-2">Command Link Offline</h3>
+        <p className="text-muted max-w-sm text-xs leading-relaxed font-medium">
+          Initialize a scenario to generate a comprehensive 12-section operational directive.
         </p>
       </div>
     );
@@ -93,270 +112,338 @@ const ResponsePanel: React.FC<ResponsePanelProps> = ({ plan, isLoading }) => {
   const hospitals  = plan.nearbyHospitals || [];
   const shelters   = plan.nearestShelters || [];
   const advisories = plan.governmentAdvisories || [];
-  const weatherText = plan.weatherConditions || 'No live weather data attached.';
+  const weatherText = plan.weatherConditions || 'No live telemetry available.';
 
-  const severityColors: any = {
-    LOW:      'text-green-400 bg-green-500/10 border-green-500/30',
-    MEDIUM:   'text-yellow-400 bg-yellow-500/10 border-yellow-500/30',
-    HIGH:     'text-orange-400 bg-orange-500/10 border-orange-500/30',
-    CRITICAL: 'text-red-400 bg-red-500/10 border-red-500/30',
-  };
-  const getSeverityStyle = (s: string) => severityColors[s?.toString().toUpperCase()] || severityColors['CRITICAL'];
-  const isSevere = ['CRITICAL', 'HIGH'].includes(summary.severityLevel?.toUpperCase());
+  const isCritical = summary.severityLevel?.toUpperCase() === 'CRITICAL' || summary.severityLevel?.toUpperCase() === 'HIGH';
 
   return (
     <motion.div
       className="space-y-4"
       initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.45, ease: 'easeOut' }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
     >
-      {/* Export Button */}
-      <div className="flex justify-end mb-2">
+      {/* Header with Export */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-2 text-muted uppercase tracking-widest font-bold text-[10px]">
+          <Clock size={12} />
+          <span>Last Updated: {new Date().toLocaleTimeString()}</span>
+        </div>
         <button
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="flex items-center space-x-2 bg-panel/40 hover:bg-panel/60 text-slate-200 transition-colors border border-white/10 px-4 py-2 rounded-md text-xs font-bold"
+          className="flex items-center space-x-2 bg-slate-900 text-white hover:bg-slate-900/90 px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm active:scale-95"
         >
-          {isExporting ? <span className="animate-spin mr-1">⚡</span> : <Download size={14} />}
-          <span>{isExporting ? 'GENERATING SECURE PDF...' : 'DOWNLOAD 12-POINT REPORT'}</span>
+          {isExporting ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Download size={14} />}
+          <span>{isExporting ? 'Generating PDF...' : 'Download Full Report'}</span>
         </button>
       </div>
 
-      <div ref={reportRef} className="bg-[#0B0F19] rounded-xl overflow-hidden pb-4">
-
-        {/* ──── SECTION 1: Incident Header ──── */}
-        <div className={`p-6 border-b border-white/10 bg-gradient-to-r ${isSevere ? 'from-red-900/40' : 'from-yellow-900/40'} to-black`}>
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex flex-col">
-              <span className="text-red-400 text-[10px] font-black tracking-widest uppercase mb-1 flex items-center">
-                <ShieldAlert size={12} className="mr-1"/> OPERATIONAL COMMAND REPORT — GROQ + GEMINI INTELLIGENCE
-              </span>
-              <h1 className="text-2xl font-black text-white uppercase tracking-wider">{summary.disasterType}</h1>
-              <p className="text-slate-300 font-medium tracking-wide flex items-center mt-1"><MapIcon size={14} className="mr-1"/> {summary.location}</p>
-            </div>
-            <div className="text-right">
-              <div className={`inline-flex px-3 py-1 rounded border font-black text-xs tracking-wider ${getSeverityStyle(summary.severityLevel)}`}>
-                SEVERITY: {summary.severityLevel}
+      <div ref={reportRef} className="card overflow-hidden">
+        {/* Incident Summary Header */}
+        <div className={`p-8 border-b border-gray-100 ${isCritical ? 'bg-red-50/30' : 'bg-blue-50/30'}`}>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                 <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest border ${isCritical ? 'bg-red-100 text-danger border-red-200' : 'bg-blue-100 text-primary border-blue-200'}`}>
+                  Operational Directive
+                </span>
+                <span className="text-muted text-[10px] font-bold uppercase tracking-widest">• Incident-ID: #{Math.floor(Math.random() * 90000) + 10000}</span>
               </div>
-              <p className="text-[10px] text-slate-500 mt-2 font-mono">{plan.generatedAt || new Date().toISOString()}</p>
+              <h1 className="text-3xl font-extrabold text-slate-900 uppercase tracking-tight leading-none">{summary.disasterType}</h1>
+              <div className="flex items-center space-x-3 text-muted text-xs font-bold uppercase">
+                <span className="flex items-center"><MapIcon size={14} className="mr-1.5" /> {summary.location}</span>
+                <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                <span>Radius: {summary.impactRadiusKM || 5}KM</span>
+              </div>
             </div>
-          </div>
-          <div className="bg-panel/50 border border-white/10 p-3 rounded-lg flex items-center gap-6">
-            <div className="flex-1 flex items-center justify-between">
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Operational Radius:</span>
-              <span className="text-sm font-black text-white">{summary.impactRadiusKM || 5} KM</span>
-            </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div className="flex-1 flex items-center justify-between">
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Affected Population:</span>
-              <span className="text-sm font-black text-white">{summary.estimatedAffectedPopulation || '100,000+'}</span>
+            
+            <div className="flex flex-col items-start md:items-end gap-3">
+               <div className={`px-4 py-2 rounded-xl border-2 flex items-center space-x-3 ${isCritical ? 'bg-white border-danger text-danger severity-critical' : 'bg-white border-warning text-warning'}`}>
+                <AlertCircle size={20} />
+                <div className="flex flex-col leading-none">
+                  <span className="text-[10px] font-black uppercase tracking-widest">Severity Level</span>
+                  <span className="text-lg font-black uppercase">{summary.severityLevel || 'Moderate'}</span>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-100 px-3 py-1.5 rounded-lg text-right shadow-sm">
+                <p className="text-[9px] font-bold text-muted uppercase tracking-[0.1em]">Affected Est.</p>
+                <p className="text-sm font-bold text-slate-900">{summary.estimatedAffectedPopulation || 'N/A'}</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex border-b border-white/10 bg-panel/30" data-html2pdf-ignore="true">
-          <button onClick={() => setActiveTab('summary')} className={`flex-1 py-3 px-4 text-xs font-black uppercase transition-all ${activeTab === 'summary' ? 'text-white border-b-2 border-primary bg-primary/15' : 'text-slate-400 hover:text-slate-100 hover:bg-white/10'}`}>Intelligence</button>
-          <button onClick={() => setActiveTab('civilians')} className={`flex-1 py-3 px-4 text-xs font-black uppercase transition-all ${activeTab === 'civilians' ? 'text-white border-b-2 border-highlight bg-highlight/15' : 'text-slate-400 hover:text-slate-100 hover:bg-white/10'}`}>Civilian Action</button>
-          <button onClick={() => setActiveTab('operators')} className={`flex-1 py-3 px-4 text-xs font-black uppercase transition-all ${activeTab === 'operators' ? 'text-white border-b-2 border-accent bg-accent/15' : 'text-slate-400 hover:text-slate-100 hover:bg-white/10'}`}>Operator Directives</button>
+        {/* Navigation Tabs */}
+        <div className="flex border-b border-gray-100 px-4 bg-gray-50/50">
+          <button 
+            onClick={() => setActiveTab('summary')}
+            className={`px-6 py-4 text-[11px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'summary' ? 'text-primary' : 'text-muted hover:text-slate-900'}`}
+          >
+            <div className="flex items-center space-x-2">
+              <BarChart3 size={14} />
+              <span>Intelligence Briefing</span>
+            </div>
+            {activeTab === 'summary' && <motion.div layoutId="tabLine" className="absolute bottom-0 left-4 right-4 h-0.5 bg-primary rounded-full" />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('civilians')}
+            className={`px-6 py-4 text-[11px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'civilians' ? 'text-purple-600' : 'text-muted hover:text-slate-900'}`}
+          >
+            <div className="flex items-center space-x-2">
+              <Users size={14} />
+              <span>Civilian Safety</span>
+            </div>
+            {activeTab === 'civilians' && <motion.div layoutId="tabLine" className="absolute bottom-0 left-4 right-4 h-0.5 bg-purple-600 rounded-full" />}
+          </button>
+          <button 
+            onClick={() => setActiveTab('operators')}
+            className={`px-6 py-4 text-[11px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'operators' ? 'text-emerald-600' : 'text-muted hover:text-slate-900'}`}
+          >
+            <div className="flex items-center space-x-2">
+              <Crosshair size={14} />
+              <span>Tactical Operations</span>
+            </div>
+            {activeTab === 'operators' && <motion.div layoutId="tabLine" className="absolute bottom-0 left-4 right-4 h-0.5 bg-emerald-600 rounded-full" />}
+          </button>
         </div>
 
-        <div className="p-4 space-y-6">
-
-          {/* ══════════ TAB 1: INTELLIGENCE ══════════ */}
-          <div className={activeTab === 'summary' ? 'block' : 'hidden print:block'}>
-
-            {/* Section 2: Risk Analysis */}
-            <div className="glass-panel p-5 border-l-4 border-l-red-500">
-              <h3 className="text-sm font-black text-primary mb-3 flex items-center uppercase"><Activity size={16} className="mr-2"/> Risk Analysis</h3>
-              {/* Hazard Severity — rendered as multi-paragraph prose */}
-              <div className="mb-4">
-                {risk?.hazardSeverity?.split(/(?<=\.)\s+(?=[A-Z])/).map((sentence: string, i: number) => (
-                  <p key={i} className="text-sm text-slate-200 leading-relaxed mb-2">{sentence}</p>
-                ))}
-              </div>
-              {risk?.predictedImpacts?.length > 0 && (
-                <div className="space-y-1">
-                  <span className="text-xs font-black text-slate-400 uppercase tracking-wider">Predicted Impacts:</span>
-                  <div className="mt-2">
-                    <ProseList items={risk.predictedImpacts} accentColor="text-red-400" />
-                  </div>
-                </div>
-              )}
-              {risk?.environmentalConditions && (
-                <div className="mt-4 p-3 rounded bg-orange-500/5 border border-orange-500/15">
-                  <span className="text-xs font-black text-orange-400 uppercase">Environmental Conditions:</span>
-                  <p className="text-sm text-slate-200 leading-relaxed mt-1">{risk.environmentalConditions}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Section 3 & 4: Weather + NDMA */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="glass-panel p-5 border-l-4 border-l-blue-500">
-                <h3 className="text-xs font-black text-blue-400 mb-3 flex items-center uppercase"><CloudRain size={14} className="mr-2"/> Live Weather Context</h3>
-                {weatherText.split(/(?<=\.)\s+(?=[A-Z])/).map((s: string, i: number) => (
-                  <p key={i} className="text-sm text-slate-200 leading-relaxed mb-2">{s}</p>
-                ))}
-              </div>
-              <div className="glass-panel p-5 border-l-4 border-l-highlight">
-                <h3 className="text-xs font-black text-highlight mb-3 flex items-center uppercase"><Info size={14} className="mr-2"/> NDMA RAG Insights</h3>
-                <CheckList items={ndmaInsights} iconColor="text-highlight" />
-              </div>
-            </div>
-
-            {/* Section 5 & 6: Hospitals & Shelters */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/5 pt-4">
-              <div>
-                <h3 className="text-sm font-black text-green-400 mb-3 flex items-center uppercase"><Building2 size={16} className="mr-2"/> Real-time Hospitals (Overpass)</h3>
-                <div className="space-y-2">
-                  {hospitals.map((h: any, i: number) => (
-                    <div key={i} className="bg-green-500/5 p-3 rounded border border-green-500/10 flex justify-between items-center text-xs">
-                      <div><p className="font-bold text-gray-200">{h.name}</p><p className="text-[10px] text-gray-500">{h.distance}</p></div>
-                      <div className="text-right text-green-400 font-medium">{h.availableBeds || h.beds} beds<br/><span className="text-[9px] text-gray-500">ICU: {h.icuAvailability || h.icu}</span></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-cyan-400 mb-3 flex items-center uppercase"><Home size={16} className="mr-2"/> Emergency Shelters (Overpass)</h3>
-                <div className="space-y-2">
-                  {shelters.map((s: any, i: number) => (
-                    <div key={i} className="bg-cyan-500/5 p-3 rounded border border-cyan-500/10 flex justify-between items-center text-xs">
-                      <div><p className="font-bold text-gray-200">{s.name}</p><p className="text-[10px] text-gray-500">{s.distance}</p></div>
-                      <div className="text-right text-cyan-400 font-medium">{s.capacity} cap<br/><span className="text-[9px] text-gray-500 max-w-[100px] truncate block">{(s.availableFacilities || s.amenities || []).join(', ')}</span></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Section 7: Government Advisories */}
-            {advisories.length > 0 && (
-              <div className="mt-4 glass-panel p-5">
-                <h3 className="text-xs font-black text-yellow-400 mb-3 flex items-center uppercase"><Newspaper size={14} className="mr-2"/> Authorities & Advisories</h3>
-                <div className="space-y-2">
-                  {advisories.map((adv: any, i: number) => (
-                    <div key={i} className="p-3 rounded bg-yellow-500/5 border border-yellow-500/15">
-                      <p className="text-sm text-yellow-200 leading-relaxed">{typeof adv === 'string' ? adv : adv.message || JSON.stringify(adv)}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ══════════ TAB 2: CIVILIANS ══════════ */}
-          <div className={`${activeTab === 'civilians' ? 'block' : 'hidden print:block print:mt-8 print:border-t print:border-white/20 print:pt-6'}`}>
-            <h2 className="text-lg font-black text-white uppercase tracking-wider mb-4 border-l-4 border-cyan-500 pl-3">Civilian Action Plan</h2>
-
-            {/* Section 8a: General Instructions */}
-            <div className="glass-panel p-5 mb-4">
-              <h3 className="text-sm font-black text-cyan-400 mb-3 flex items-center uppercase"><AlertTriangle size={16} className="mr-2"/> Immediate Survival Instructions</h3>
-              <ProseList items={civilianPlan?.generalInstructions || []} accentColor="text-cyan-400" />
-            </div>
-
-            {/* Section 8b: Evacuation Routes — FULL WIDTH PROSE */}
-            {civilianPlan?.evacuationRoutes && (
-              <div className="mb-4 glass-panel p-5 border-l-4 border-l-yellow-500">
-                <h3 className="text-sm font-black text-yellow-400 mb-3 uppercase flex items-center"><Truck size={16} className="mr-2"/> Evacuation Protocol</h3>
-                {civilianPlan.evacuationRoutes.split(/(?<=\.)\s+(?=[A-Z])/).map((sentence: string, i: number) => (
-                  <p key={i} className="text-sm text-gray-200 leading-relaxed mb-2">{sentence}</p>
-                ))}
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Section 8c: Safety Precautions */}
-              <div className="glass-panel p-5">
-                <h3 className="text-sm font-black text-green-400 mb-3 flex items-center uppercase"><Shield size={16} className="mr-2"/> Vital Safety Precautions</h3>
-                <CheckList items={civilianPlan?.safetyPrecautions || []} iconColor="text-green-400" />
-              </div>
-
-              <div className="space-y-4">
-                {/* Section 11: Essential Kit */}
-                <div className="glass-panel p-5">
-                  <h3 className="text-sm font-black text-purple-400 mb-3 flex items-center uppercase"><Backpack size={16} className="mr-2"/> Essential Supply Kit</h3>
-                  <div className="space-y-2">
-                    {supplies.map((item: string, i: number) => (
-                      <div key={i} className="flex items-start gap-2 p-2 rounded bg-purple-500/5 border border-purple-500/10">
-                        <Zap size={12} className="text-purple-400 shrink-0 mt-1" />
-                        <p className="text-xs text-slate-200 leading-relaxed">{item}</p>
+        <div className="p-8">
+          <AnimatePresence mode="wait">
+            {activeTab === 'summary' && (
+              <motion.div 
+                key="intelligence"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-8"
+              >
+                {/* Risk Analysis Card */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="card-md p-6 border-l-4 border-l-red-500">
+                      <div className="flex items-center space-x-2 mb-4">
+                        <Activity size={18} className="text-danger" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Hazard Risk Analysis</h3>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Section 10: Emergency Contacts */}
-                <div className="glass-panel p-5">
-                  <h3 className="text-sm font-black text-red-400 mb-3 flex items-center uppercase"><Phone size={16} className="mr-2"/> Emergency Lines</h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {contacts.map((c: any, i: number) => (
-                      <div key={i} className="bg-red-500/5 p-2 rounded border border-red-500/10 text-xs text-center">
-                        <p className="text-gray-400 font-bold mb-0.5">{c.department || c.name}</p>
-                        <p className="text-red-400 font-black">{c.number}</p>
+                      <div className="space-y-4">
+                        {risk?.hazardSeverity?.split(/(?<=\.)\s+(?=[A-Z])/).map((para: string, i: number) => (
+                          <p key={i} className="text-xs text-muted leading-relaxed font-medium">{para}</p>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ══════════ TAB 3: OPERATORS ══════════ */}
-          <div className={`${activeTab === 'operators' ? 'block' : 'hidden print:block print:mt-8 print:border-t print:border-white/20 print:pt-6'}`}>
-            <h2 className="text-lg font-black text-white uppercase tracking-wider mb-4 border-l-4 border-orange-500 pl-3">Rescue Operator Directives</h2>
-
-            {/* Section 9a: Team Deployment */}
-            <div className="glass-panel p-5 mb-4">
-              <h3 className="text-sm font-black text-orange-400 mb-3 flex items-center uppercase"><Users size={16} className="mr-2"/> Team Deployment Strategies</h3>
-              <ProseList items={operatorPlan?.deploymentStrategies || []} accentColor="text-orange-400" />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Section 9b: Mass Evacuation */}
-              <div className="glass-panel p-5">
-                <h3 className="text-sm font-black text-yellow-400 mb-3 flex items-center uppercase"><Truck size={16} className="mr-2"/> Mass Evacuation Plan</h3>
-                <ProseList items={operatorPlan?.evacuationPlans || []} accentColor="text-yellow-400" />
-              </div>
-
-              {/* Section 9c: Medical Triage */}
-              <div className="glass-panel p-5">
-                <h3 className="text-sm font-black text-red-400 mb-3 flex items-center uppercase"><HeartPulse size={16} className="mr-2"/> Medical Triage Protocol</h3>
-                <ProseList items={operatorPlan?.medicalTriageProcedures || []} accentColor="text-red-400" />
-              </div>
-            </div>
-
-            {/* Section 9d: Supply Logistics */}
-            <div className="glass-panel p-5 mt-4">
-              <h3 className="text-sm font-black text-blue-400 mb-3 flex items-center uppercase"><ListChecks size={16} className="mr-2"/> Supply & Logistics</h3>
-              <ProseList items={operatorPlan?.supplyDistribution || []} accentColor="text-blue-400" />
-            </div>
-
-            {/* Section 12: Continuous Monitoring */}
-            {monitoring && (
-              <div className="mt-4 glass-panel p-5 bg-black/40 border border-white/5">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-black text-gray-200 flex items-center uppercase"><Clock size={16} className="mr-2 text-cyan-400"/> Continuous Monitoring</h3>
-                  <div className="flex items-center gap-2">
-                    <Target size={12} className="text-cyan-400" />
-                    <span className="text-xs text-gray-300">{monitoring.updateFrequency}</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {monitoring.metricsToTrack?.map((m: string, i: number) => (
-                    <div key={i} className="flex items-start gap-3 p-3 rounded bg-cyan-500/5 border border-cyan-500/10">
-                      <span className="text-[10px] uppercase font-black px-2 py-0.5 bg-cyan-500/20 text-cyan-400 rounded border border-cyan-500/30 shrink-0 mt-0.5">#{i+1}</span>
-                      <p className="text-sm text-slate-200 leading-relaxed">{m}</p>
+                      
+                      <div className="mt-6">
+                        <p className="text-[10px] font-bold text-muted uppercase tracking-widest mb-3">Predicted Secondary Impacts</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {risk?.predictedImpacts?.map((impact: string, i: number) => (
+                            <div key={i} className="flex items-center space-x-2 p-2 rounded-lg bg-red-50/50 border border-red-100 text-[11px] font-semibold text-danger">
+                              <AlertTriangle size={12} />
+                              <span>{impact}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="card p-5">
+                         <div className="flex items-center space-x-2 mb-3">
+                          <CloudRain size={16} className="text-primary" />
+                          <h4 className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">Atmospheric Conditions</h4>
+                        </div>
+                        <p className="text-xs text-muted leading-relaxed font-medium">{weatherText}</p>
+                      </div>
+                      <div className="card p-5">
+                         <div className="flex items-center space-x-2 mb-3">
+                          <Info size={16} className="text-indigo-600" />
+                          <h4 className="text-[11px] font-bold text-slate-900 uppercase tracking-wider">Local Protocols (NDMA)</h4>
+                        </div>
+                        <ul className="space-y-2">
+                           {ndmaInsights.slice(0, 3).map((insight: string, i: number) => (
+                             <li key={i} className="text-[11px] text-muted font-medium flex items-start">
+                               <span className="w-1 h-1 rounded-full bg-indigo-300 mt-1.5 mr-2 shrink-0" />
+                               {insight}
+                             </li>
+                           ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="card p-6 bg-emerald-50/30 border-emerald-100">
+                       <div className="flex items-center space-x-2 mb-4">
+                        <Building2 size={18} className="text-emerald-600" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Medical Assets</h3>
+                      </div>
+                      <div className="space-y-3">
+                        {hospitals.slice(0, 4).map((h: any, i: number) => (
+                          <div key={i} className="p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                            <div className="flex justify-between items-start mb-1">
+                              <span className="text-[11px] font-bold text-slate-900 truncate pr-2">{h.name}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${h.availableBeds > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                                {h.availableBeds || 0} Beds
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-muted font-medium italic">{h.distance} from centroid</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="card p-6 bg-amber-50/30 border-amber-100">
+                       <div className="flex items-center space-x-2 mb-4">
+                        <Home size={18} className="text-amber-600" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Emergency Shelters</h3>
+                      </div>
+                      <div className="space-y-3">
+                        {shelters.slice(0, 3).map((s: any, i: number) => (
+                          <div key={i} className="p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
+                            <div className="flex justify-between items-center mb-1">
+                              <span className="text-[11px] font-bold text-slate-900 truncate">{s.name}</span>
+                              <span className="text-[10px] font-bold text-amber-700">{s.capacity} CAP</span>
+                            </div>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                               {s.availableFacilities?.slice(0, 2).map((fac: string, j: number) => (
+                                 <span key={j} className="text-[8px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded border border-amber-100 font-bold uppercase">{fac}</span>
+                               ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'civilians' && (
+              <motion.div 
+                key="civilians"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-8"
+              >
+                <div className="card-md p-8 border-l-4 border-l-purple-500">
+                  <div className="flex items-center space-x-3 mb-6">
+                    <Shield size={22} className="text-purple-600" />
+                    <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight">Public Safety Orders</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="text-[11px] font-bold text-muted uppercase tracking-widest mb-4 flex items-center">
+                          <AlertTriangle size={14} className="mr-2 text-warning" />
+                          Survival Directives
+                        </h4>
+                        <ProseList items={civilianPlan?.generalInstructions || []} accentColor="text-purple-600" icon={<Zap size={14}/>} />
+                      </div>
+                    </div>
+
+                    <div className="space-y-8">
+                       <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6">
+                         <h4 className="text-[11px] font-bold text-muted uppercase tracking-widest mb-4 flex items-center">
+                          <Truck size={14} className="mr-2 text-indigo-600" />
+                          Evacuation Corridors
+                        </h4>
+                        <div className="space-y-3">
+                           {civilianPlan?.evacuationRoutes?.split(/(?<=\.)\s+(?=[A-Z])/).map((route: string, i: number) => (
+                             <div key={i} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm text-xs text-muted font-medium">
+                               {route}
+                             </div>
+                           ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="card p-5">
+                          <h4 className="text-[11px] font-bold text-green-600 uppercase tracking-widest mb-3">Essentials Kit</h4>
+                          <div className="space-y-2">
+                             {supplies.map((item: string, i: number) => (
+                               <div key={i} className="flex items-center text-[10px] font-bold text-muted">
+                                 <CheckCircle2 size={12} className="mr-2 text-green-500" />
+                                 {item}
+                               </div>
+                             ))}
+                          </div>
+                        </div>
+                        <div className="card p-5">
+                          <h4 className="text-[11px] font-bold text-red-600 uppercase tracking-widest mb-3">Hotlines</h4>
+                          <div className="space-y-2">
+                             {contacts.slice(0, 4).map((c: any, i: number) => (
+                               <div key={i} className="flex flex-col">
+                                 <span className="text-[9px] font-bold text-muted uppercase">{c.department || c.name}</span>
+                                 <span className="text-xs font-black text-danger">{c.number}</span>
+                               </div>
+                             ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'operators' && (
+              <motion.div 
+                key="operators"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-10"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <div className="card-md p-6 border-t-4 border-t-emerald-500">
+                     <div className="flex items-center space-x-3 mb-6">
+                        <Users size={20} className="text-emerald-600" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Personnel Deployment</h3>
+                     </div>
+                     <ProseList items={operatorPlan?.deploymentStrategies || []} accentColor="text-emerald-600" icon={<Crosshair size={14}/>} />
+                   </div>
+                   <div className="card-md p-6 border-t-4 border-t-amber-500">
+                     <div className="flex items-center space-x-3 mb-6">
+                        <Truck size={20} className="text-amber-600" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Logistics & Supply Chain</h3>
+                     </div>
+                     <ProseList items={operatorPlan?.supplyDistribution || []} accentColor="text-amber-600" icon={<Backpack size={14}/>} />
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <div className="card p-6">
+                     <div className="flex items-center space-x-3 mb-6">
+                        <HeartPulse size={20} className="text-red-600" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Triage & Medical Phase</h3>
+                     </div>
+                     <ProseList items={operatorPlan?.medicalTriageProcedures || []} accentColor="text-red-600" icon={<Activity size={14}/>} />
+                   </div>
+                   <div className="card p-6 bg-gray-50/50">
+                     <div className="flex items-center space-x-2 mb-6">
+                        <Target size={20} className="text-indigo-600" />
+                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Intelligence Monitoring</h3>
+                     </div>
+                     <div className="space-y-4">
+                        <div className="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                           <span className="text-[11px] font-bold text-muted uppercase tracking-wider">Scan Frequency</span>
+                           <span className="badge badge-blue">{monitoring?.updateFrequency || 'Real-time'}</span>
+                        </div>
+                        <div className="space-y-2">
+                           {monitoring?.metricsToTrack?.map((metric: string, i: number) => (
+                             <div key={i} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm">
+                               <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                               <span className="text-xs font-semibold text-slate-900">{metric}</span>
+                             </div>
+                           ))}
+                        </div>
+                     </div>
+                   </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.div>
